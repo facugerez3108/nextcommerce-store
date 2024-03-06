@@ -1,39 +1,39 @@
-import { create } from "zustand";
-import { Product } from "@/types";
-import { persist, createJSONStorage } from "zustand/middleware";
-import toast from "react-hot-toast";
+import { create } from 'zustand';
+import { toast } from 'react-hot-toast';
+import { persist, createJSONStorage } from "zustand/middleware"; 
 
+import { Product } from '@/types';
+import { AlertTriangle } from 'lucide-react';
 
-
-interface CartStoreProps {
-    items: Product[]
-    addItem: (data: Product) => void;
-    removeItem: (id: string) => void;
-    removeAll: () => void;
+interface CartStore {
+  items: Product[];
+  addItem: (data: Product) => void;
+  removeItem: (id: string) => void;
+  removeAll: () => void;
 }
 
 const useCart = create(
-    persist<CartStoreProps>((set, get) => ({
-        items: [],
-        addItem: (data: Product) => {
-            const currentItems = get().items;
-            const existingItem = currentItems.find((item) => item.id === data.id);
+  persist<CartStore>((set, get) => ({
+  items: [],
+  addItem: (data: Product) => {
+    const currentItems = get().items;
+    const existingItem = currentItems.find((item) => item.id === data.id);
+    
+    if (existingItem) {
+      return toast('El item ya está en el carro.');
+    }
 
-            if(existingItem) {
-                return toast("El item ya está en el carro")
-            }
+    set({ items: [...get().items, data] });
+    toast.success('Item agregado al carrito.');
+  },
+  removeItem: (id: string) => {
+    set({ items: [...get().items.filter((item) => item.id !== id)] });
+    toast.success('Item removed from cart.');
+  },
+  removeAll: () => set({ items: [] }),
+}), {
+  name: 'cart-storage',
+  storage: createJSONStorage(() => localStorage)
+}));
 
-            set({items: [...get().items, data]});
-            toast.success("Item agregado al carro")
-        },
-        removeItem: (id: string) => {
-            set({items: [...get().items.filter((item) => item.id !== id)] });
-            toast.success("Item eliminado del carro")
-        },
-        removeAll: () => set({items: []})
-    }), {
-        name: "cart-storage",
-        storage: createJSONStorage(() => localStorage)
-    })
-)
 export default useCart;
