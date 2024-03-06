@@ -2,12 +2,24 @@
 
 import Container from "@/components/ui/container";
 import useCart from "@/hooks/use-cart";
-import { useEffect, useState } from "react";
 import CartItem from "./components/cart-item";
 import Summary from "./components/summary";
+import { useEffect, useState } from "react";
 
 const CartPage = () => {
-  const cart = useCart();
+    
+    const [isMounted, setIsMounted ] = useState(false);
+  
+    useEffect(() => {
+        setIsMounted(true);
+    },[])
+    
+    const cart = useCart();
+
+    if(!isMounted) { 
+        return null
+    }
+
 
   return (
     <div className="bg-white">
@@ -28,7 +40,7 @@ const CartPage = () => {
                             ))}
                         </ul>
                     </div>
-                    <Summary />
+                    <Summary/>
                 </div>
             </div>
         </Container>

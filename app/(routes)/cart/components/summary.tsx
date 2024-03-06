@@ -9,9 +9,7 @@ import Button from "@/components/ui/button";
 import Currency from "@/components/ui/currency";
 import useCart from "@/hooks/use-cart";
 
-interface SummaryProps {
 
-}
 
 const Summary = () => {
     const searchParams = useSearchParams();
@@ -20,12 +18,12 @@ const Summary = () => {
     
     useEffect(() => { 
         if(searchParams.get("success")) {
-            toast.success("Orden realizada exitosamente");
+            toast.success("Pago realizado con éxito");
             removeAll();
         }
 
         if(searchParams.get("canceled")) {
-            toast.error("Algo salio mal");
+            toast.error("Pago cancelado");
         }
     }, [searchParams, removeAll])
 
@@ -35,10 +33,10 @@ const Summary = () => {
 
     const onCheckout = async () => {
         const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/checkout`, {
-            productsIds: items.map((item) => item.id)
+            productsIds: items.map((item) => item.id),
         });
 
-        window.location = response.data.url
+        window.location = response.data.url;
     }
 
 
@@ -55,7 +53,7 @@ const Summary = () => {
                     <Currency value={totalPrice}/>
                 </div>
             </div>
-            <Button onClick={onCheckout} className="w-full mt-6">
+            <Button disabled={items.length === 0} onClick={onCheckout} className="w-full mt-6">
                 Checkout
             </Button>
         </div>  
